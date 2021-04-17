@@ -15,11 +15,14 @@ function App() {
   ];
   return (
     <div className="p-2 bg-transparent w-full h-screen">
-      <div className="flex shadow-lg flex-col h-full">
+      <div
+        className="flex shadow-lg flex-col h-full"
+        style={{ minHeight: '80px' }}
+      >
         <div className="px-6 py-4 bg-gray-700 w-full text-white font-bold rounded-t-lg">
           Email Demo
         </div>
-        <hr className="mx-6" />
+        <hr className="w-full" />
         <div className="bg-white px-6 py-6">
           {headers.map((header, i) => (
             <h1 className={i !== 0 ? 'mt-2' : ''}>
