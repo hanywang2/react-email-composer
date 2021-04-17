@@ -23,10 +23,10 @@ function App() {
         <div className="bg-white px-6 py-6">
           {headers.map((header, i) => (
             <h1 className={i !== 0 ? 'mt-2' : ''}>
-              <button className="text-gray-500">{header.title}:</button>
-              <button className="ml-1 font-semibold text-gray-800">
+              <span className="text-gray-500">{header.title}:</span>
+              <span className="ml-1 font-semibold text-gray-800">
                 {header.input}
-              </button>
+              </span>
             </h1>
           ))}
         </div>
