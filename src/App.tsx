@@ -16,8 +16,11 @@ function App() {
   return (
     <div className="p-8 bg-transparent w-full h-screen">
       <div className="flex shadow-xl flex-col h-full bg-white rounded-lg text-lg">
-        <div className="px-6 py-4 w-full bg-gray-50 text-gray-800 font-bold rounded-t-lg">
-          Email Demo
+        <div
+          className="px-6 py-4 w-full text-white font-bold rounded-t-lg"
+          style={{ backgroundColor: '#404040' }}
+        >
+          New Email
         </div>
         <hr className="w-full" />
         <div className="bg-white px-6 py-6">
