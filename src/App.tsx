@@ -15,10 +15,7 @@ function App() {
   ];
   return (
     <div className="p-2 bg-transparent w-full h-screen">
-      <div
-        className="flex shadow-lg flex-col h-full"
-        style={{ minHeight: '80px' }}
-      >
+      <div className="flex shadow-lg flex-col h-full bg-white rounded-lg">
         <div className="px-6 py-4 bg-gray-700 w-full text-white font-bold rounded-t-lg">
           Email Demo
         </div>
@@ -26,8 +23,8 @@ function App() {
         <div className="bg-white px-6 py-6">
           {headers.map((header, i) => (
             <h1 className={i !== 0 ? 'mt-2' : ''}>
-              <button className="text-gray-500">{header.title}: </button>
-              <button className="font-semibold text-gray-800">
+              <button className="text-gray-500">{header.title}:</button>
+              <button className="ml-1 font-semibold text-gray-800">
                 {header.input}
               </button>
             </h1>
@@ -41,7 +38,7 @@ function App() {
           of type and scrambled it to make a type specimen book. It has survived
           not only five centuries Cheers, Richard
         </div>
-        <div className="flex px-6 py-2 bg-gray-100">
+        <div className="flex px-6 py-2 bg-gray-100 rounded-b-lg">
           <button className="bg-blue-600 hover:bg-blue-500 py-2 px-12 rounded-md text-white font-medium">
             Send
           </button>
