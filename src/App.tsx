@@ -14,9 +14,9 @@ function App() {
     },
   ];
   return (
-    <div className="p-2 bg-transparent w-full h-screen">
-      <div className="flex shadow-lg flex-col h-full bg-white rounded-lg">
-        <div className="px-6 py-4 bg-gray-700 w-full text-white font-bold rounded-t-lg">
+    <div className="p-4 bg-transparent w-full h-screen">
+      <div className="flex shadow-xl flex-col h-full bg-white rounded-lg text-lg">
+        <div className="px-6 py-4 w-full bg-gray-100 text-gray-800 font-bold rounded-t-lg">
           Email Demo
         </div>
         <hr className="w-full" />
