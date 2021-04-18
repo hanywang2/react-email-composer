@@ -139,17 +139,10 @@ function App() {
               <span className="text-gray-500">{header.title}</span>
               <span
                 className="relative ml-1 font-semibold px-2 rounded-md"
-                style={
-                  header.isFrom
-                    ? {
-                        backgroundColor: 'rgba(66, 133, 244)',
-                        color: 'white',
-                      }
-                    : {
-                        backgroundColor: '#e4fef0',
-                        color: 'rgba(66, 133, 244)',
-                      }
-                }
+                style={{
+                  backgroundColor: '#e4fef0',
+                  color: 'rgba(66, 133, 244)',
+                }}
               >
                 <span className={header.isFrom ? 'text-transparent' : ''}>
                   {header.input}
