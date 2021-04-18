@@ -1,18 +1,65 @@
+import { useState } from 'react';
+import { Editor, EditorState, RichUtils } from 'draft-js';
+import 'draft-js/dist/Draft.css';
+
 function App() {
+  const [editorState, setEditorState] = useState(() =>
+    EditorState.createEmpty()
+  );
   const headers = [
     {
       title: 'To',
-      input: 'Hooli Customer Support (support@hooli.xyz)',
+      input: 'Dunder Mifflin Customer Support (support@dundermifflin.com)',
     },
     {
       title: 'Subject',
-      input: 'Questions about Hooli',
+      input: 'Questions about Dunder Mifflin',
     },
     {
       title: 'From',
       input: '',
     },
   ];
+
+  const handleKeyCommand = (command: any) => {
+    const newState = RichUtils.handleKeyCommand(editorState, command);
+    if (newState) {
+      setEditorState(newState);
+      return 'handled';
+    }
+    return 'not-handled';
+  };
+
+  const getStyleButtonColor = (style: string) => {
+    let styleColor = 'hover:text-gray-600 ';
+    styleColor += editorState.getCurrentInlineStyle().has(style)
+      ? 'text-gray-600'
+      : 'text-gray-400';
+
+    return styleColor;
+  };
+
+  const clearEditor = () => {
+    setEditorState(EditorState.createEmpty());
+  };
+
+  const onToggleBold = (event: any) => {
+    event.preventDefault();
+    return setEditorState(RichUtils.toggleInlineStyle(editorState, 'BOLD'));
+  };
+
+  const onToggleItalics = (event: any) => {
+    event.preventDefault();
+    return setEditorState(RichUtils.toggleInlineStyle(editorState, 'ITALIC'));
+  };
+
+  const onToggleUnderline = (event: any) => {
+    event.preventDefault();
+    return setEditorState(
+      RichUtils.toggleInlineStyle(editorState, 'UNDERLINE')
+    );
+  };
+
   return (
     <div className="p-8 bg-transparent w-full h-screen">
       <div className="flex shadow-xl flex-col h-full bg-white rounded-lg text-lg">
@@ -34,12 +81,12 @@ function App() {
           ))}
         </div>
         <hr className="mx-6" />
-        <div className="px-6 py-4 flex-auto overflow-scroll">
-          Hey there, Lorem Ipsum is simply dummy text of the printing and
-          typesetting industry. Lorem Ipsum has been the industry's standard
-          dummy text ever since the 1500s, when an unknown printer took a galley
-          of type and scrambled it to make a type specimen book. It has survived
-          not only five centuries Cheers, Richard
+        <div className="px-6 py-4 flex-auto overflow-scroll h-full">
+          <Editor
+            editorState={editorState}
+            handleKeyCommand={handleKeyCommand}
+            onChange={setEditorState}
+          />
         </div>
         <div className="flex px-6 py-2 bg-gray-100 rounded-b-lg">
           <button className="bg-blue-600 hover:bg-blue-500 py-2 px-12 rounded-md text-white font-medium">
@@ -47,13 +94,16 @@ function App() {
           </button>
           <div className="flex-1 flex items-stretch">
             <div className="flex-1 flex items-center">
-              <button className="ml-4 focus:outline-none">
+              <button
+                className="ml-4 focus:outline-none"
+                onMouseDown={onToggleBold}
+              >
                 <svg
                   aria-hidden="true"
                   focusable="false"
                   data-prefix="fas"
                   data-icon="bold"
-                  className="h-4 w-4 text-gray-400 hover:text-gray-600"
+                  className={`h-4 w-4 ${getStyleButtonColor('BOLD')}`}
                   role="img"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 384 512"
@@ -64,13 +114,16 @@ function App() {
                   ></path>
                 </svg>
               </button>
-              <button className="ml-3 focus:outline-none">
+              <button
+                className="ml-3 focus:outline-none"
+                onMouseDown={onToggleItalics}
+              >
                 <svg
                   aria-hidden="true"
                   focusable="false"
                   data-prefix="fas"
                   data-icon="italic"
-                  className="h-4 w-4 text-gray-400 hover:text-gray-600"
+                  className={`h-4 w-4 ${getStyleButtonColor('ITALIC')}`}
                   role="img"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 320 512"
@@ -81,13 +134,16 @@ function App() {
                   ></path>
                 </svg>
               </button>
-              <button className="ml-3 focus:outline-none">
+              <button
+                className="ml-3 focus:outline-none"
+                onMouseDown={onToggleUnderline}
+              >
                 <svg
                   aria-hidden="true"
                   focusable="false"
                   data-prefix="fas"
                   data-icon="underline"
-                  className="h-4 w-4 text-gray-400 hover:text-gray-600"
+                  className={`h-4 w-4 ${getStyleButtonColor('UNDERLINE')}`}
                   role="img"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 448 512"
@@ -100,7 +156,7 @@ function App() {
               </button>
             </div>
             <div className="flex items-center">
-              <button className="focus:outline-none">
+              <button className="focus:outline-none" onClick={clearEditor}>
                 <svg
                   aria-hidden="true"
                   focusable="false"
