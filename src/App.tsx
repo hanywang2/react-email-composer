@@ -18,7 +18,7 @@ function App() {
       <div className="flex shadow-xl flex-col h-full bg-white rounded-lg text-lg">
         <div
           className="px-6 py-4 w-full text-white font-bold rounded-t-lg"
-          style={{ backgroundColor: '#404040' }}
+          style={{ backgroundColor: '#0c1d37' }}
         >
           New Email
         </div>
