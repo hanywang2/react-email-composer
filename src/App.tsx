@@ -31,21 +31,6 @@ function App() {
   const [lastCompletedPlaceholder, setLastCompletedPlaceholder] = useState(0);
   const [timeSinceStart, setTimeSinceStart] = useState(0);
   const [fromInput, setFromInput] = useState('');
-  const headers = [
-    {
-      title: 'To',
-      input: 'Dunder Mifflin Support (support@dundermifflin.com)',
-    },
-    {
-      title: 'Subject',
-      input: 'Questions about Dunder Mifflin',
-    },
-    {
-      isFrom: true,
-      title: 'From',
-      input: fromInput,
-    },
-  ];
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -123,6 +108,9 @@ function App() {
     );
   };
 
+  const isFromPlaceholderEmpty = fromInput === '';
+  const isEmailValid = validateEmail(fromInput);
+
   return (
     <div className="p-8 bg-transparent w-full h-screen">
       <div className="flex shadow-xl flex-col h-full bg-white rounded-lg text-lg">
@@ -134,30 +122,40 @@ function App() {
         </div>
         <hr className="w-full" />
         <div className="bg-white px-6 py-6">
-          {headers.map((header, i) => (
-            <div className={`flex ${i !== 0 ? 'mt-2' : ''}`}>
-              <span className="text-gray-500">{header.title}</span>
-              <span
-                className="relative ml-1 font-semibold px-2 rounded-md"
-                style={{
-                  backgroundColor: '#e4fef0',
-                  color: 'rgba(66, 133, 244)',
-                }}
-              >
-                <span className={header.isFrom ? 'text-transparent' : ''}>
-                  {header.input}
-                </span>
-                {header.isFrom && (
-                  <input
-                    type="text"
-                    className="absolute h-full left-0 font-semibold px-2 rounded-md bg-transparent focus:outline-none w-96"
-                    value={fromInput}
-                    onChange={(e) => setFromInput(e.target.value)}
-                  />
-                )}
-              </span>
-            </div>
-          ))}
+          <div className="flex">
+            <span className="text-gray-500">To</span>
+            <span
+              className="relative ml-1 font-semibold px-2 rounded-md"
+              style={{
+                backgroundColor: '#ebf5f5',
+                color: 'rgba(66, 133, 244)',
+              }}
+            >
+              <span>Dunder Mifflin Support (support@dundermifflin.com)</span>
+            </span>
+          </div>
+          <div className="flex mt-2">
+            <span className="text-gray-500">From</span>
+            <span
+              className={`relative ml-1 font-semibold px-2 rounded-md ${
+                isFromPlaceholderEmpty ? 'w-48' : ''
+              }`}
+              style={{
+                backgroundColor: isEmailValid ? '#ebf5f5' : '#f8f8f8',
+                color: isEmailValid ? 'rgba(66, 133, 244)' : 'rgba(75, 85, 99)',
+              }}
+            >
+              <span className="text-transparent">{fromInput}</span>
+              <input
+                type="text"
+                className="absolute h-full left-0 font-semibold px-2 rounded-md
+                bg-transparent focus:outline-none min-w-full placeholder-gray-400"
+                value={fromInput}
+                onChange={(e) => setFromInput(e.target.value)}
+                placeholder="you@example.com"
+              />
+            </span>
+          </div>
         </div>
         <hr className="mx-6" />
         <div className="px-6 py-4 flex-auto overflow-scroll h-full">
@@ -269,5 +267,10 @@ function App() {
     </div>
   );
 }
+
+const validateEmail = (email: string) => {
+  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(String(email).toLowerCase());
+};
 
 export default App;
