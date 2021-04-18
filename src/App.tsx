@@ -1,11 +1,35 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Editor, EditorState, RichUtils } from 'draft-js';
 import 'draft-js/dist/Draft.css';
+
+const PLACEHOLDERS = [
+  {
+    key: 'price',
+    text:
+      'Hello,\n\nWhat is the price of a ream of paper at Dunder Mifflin?\n\nBest,\nTom from Blue Cross',
+  },
+  {
+    key: 'fire',
+    text: 'My Sabre printer just started smoking. What should I do?',
+  },
+  {
+    key: 'contact',
+    text:
+      "I'm having issues with with my shipment. Can I get in contact with the assistant regional manager?",
+  },
+];
 
 function App() {
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty()
   );
+  const [currentPlaceholder, setCurrentPlaceholder] = useState({
+    key: 'price',
+    text: '',
+  });
+  const [isFocused, setIsFocused] = useState(false);
+  const [lastCompletedPlaceholder, setLastCompletedPlaceholder] = useState(0);
+  const [timeSinceStart, setTimeSinceStart] = useState(0);
   const headers = [
     {
       title: 'To',
@@ -20,6 +44,43 @@ function App() {
       input: '',
     },
   ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const currentLength = currentPlaceholder.text.length;
+
+      const currentIndex = PLACEHOLDERS.findIndex(
+        (placeholder) => placeholder.key === currentPlaceholder.key
+      );
+
+      const selectedPlaceholder = PLACEHOLDERS[currentIndex];
+
+      if (currentLength < selectedPlaceholder.text.length) {
+        setCurrentPlaceholder({
+          key: selectedPlaceholder.key,
+          text: selectedPlaceholder.text.substring(0, currentLength + 1),
+        });
+      } else if (lastCompletedPlaceholder === 0) {
+        setLastCompletedPlaceholder(timeSinceStart);
+      }
+
+      if (timeSinceStart - lastCompletedPlaceholder > 7000) {
+        setLastCompletedPlaceholder(0);
+        setTimeSinceStart(0);
+        const nextIndex =
+          currentIndex + 1 === PLACEHOLDERS.length ? 0 : currentIndex + 1;
+        setCurrentPlaceholder({ key: PLACEHOLDERS[nextIndex].key, text: '' });
+      } else {
+        return setTimeSinceStart(timeSinceStart + 30);
+      }
+    }, 25);
+    return () => clearInterval(interval);
+  }, [
+    currentPlaceholder.key,
+    currentPlaceholder.text.length,
+    lastCompletedPlaceholder,
+    timeSinceStart,
+  ]);
 
   const handleKeyCommand = (command: any) => {
     const newState = RichUtils.handleKeyCommand(editorState, command);
@@ -84,8 +145,11 @@ function App() {
         <div className="px-6 py-4 flex-auto overflow-scroll h-full">
           <Editor
             editorState={editorState}
+            placeholder={isFocused ? '' : currentPlaceholder.text}
             handleKeyCommand={handleKeyCommand}
             onChange={setEditorState}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
           />
         </div>
         <div className="flex px-6 py-2 bg-gray-100 rounded-b-lg">
