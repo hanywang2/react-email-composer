@@ -30,18 +30,20 @@ function App() {
   const [isFocused, setIsFocused] = useState(false);
   const [lastCompletedPlaceholder, setLastCompletedPlaceholder] = useState(0);
   const [timeSinceStart, setTimeSinceStart] = useState(0);
+  const [fromInput, setFromInput] = useState('');
   const headers = [
     {
       title: 'To',
-      input: 'Dunder Mifflin Customer Support (support@dundermifflin.com)',
+      input: 'Dunder Mifflin Support (support@dundermifflin.com)',
     },
     {
       title: 'Subject',
       input: 'Questions about Dunder Mifflin',
     },
     {
+      isFrom: true,
       title: 'From',
-      input: '',
+      input: fromInput,
     },
   ];
 
@@ -128,17 +130,40 @@ function App() {
           className="px-6 py-4 w-full text-white font-bold rounded-t-lg"
           style={{ backgroundColor: '#0c1d37' }}
         >
-          New Email
+          Interactive Demo
         </div>
         <hr className="w-full" />
         <div className="bg-white px-6 py-6">
           {headers.map((header, i) => (
-            <h1 className={i !== 0 ? 'mt-2' : ''}>
-              <span className="text-gray-500">{header.title}:</span>
-              <span className="ml-1 font-semibold text-gray-800">
-                {header.input}
+            <div className={`flex ${i !== 0 ? 'mt-2' : ''}`}>
+              <span className="text-gray-500">{header.title}</span>
+              <span
+                className="relative ml-1 font-semibold px-2 rounded-md"
+                style={
+                  header.isFrom
+                    ? {
+                        backgroundColor: 'rgba(66, 133, 244)',
+                        color: 'white',
+                      }
+                    : {
+                        backgroundColor: '#e4fef0',
+                        color: 'rgba(66, 133, 244)',
+                      }
+                }
+              >
+                <span className={header.isFrom ? 'text-transparent' : ''}>
+                  {header.input}
+                </span>
+                {header.isFrom && (
+                  <input
+                    type="text"
+                    className="absolute h-full left-0 font-semibold px-2 rounded-md bg-transparent focus:outline-none w-96"
+                    value={fromInput}
+                    onChange={(e) => setFromInput(e.target.value)}
+                  />
+                )}
               </span>
-            </h1>
+            </div>
           ))}
         </div>
         <hr className="mx-6" />
@@ -153,7 +178,14 @@ function App() {
           />
         </div>
         <div className="flex px-6 py-2 bg-gray-100 rounded-b-lg">
-          <button className="bg-blue-600 hover:bg-blue-500 py-2 px-12 rounded-md text-white font-medium">
+          <button
+            className={`${
+              editorState.getCurrentContent().hasText() && fromInput !== ''
+                ? 'bg-blue-600 hover:bg-blue-500 text-white'
+                : 'bg-gray-300 text-gray-100'
+            }
+            py-2 px-12 rounded-md font-medium`}
+          >
             Send
           </button>
           <div className="flex-1 flex items-stretch">
