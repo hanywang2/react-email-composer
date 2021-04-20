@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import {
   Editor,
   EditorState,
@@ -38,6 +39,7 @@ function App() {
   const [timeSinceStart, setTimeSinceStart] = useState(0);
   const [fromInput, setFromInput] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const { executeRecaptcha } = useGoogleReCaptcha();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -118,6 +120,10 @@ function App() {
   const onSendEmail = async () => {
     setIsGenerating(true);
 
+    if (executeRecaptcha == null) return null;
+
+    const recaptchaToken = await executeRecaptcha('composer');
+
     const blocks = convertToRaw(editorState.getCurrentContent()).blocks;
     const emailValue = blocks
       .map((block) => (!block.text.trim() && '\n') || block.text)
@@ -131,6 +137,7 @@ function App() {
       },
       body: JSON.stringify({
         email: emailValue,
+        recaptchaToken,
       }),
     });
 
@@ -159,7 +166,7 @@ function App() {
           Interactive Demo
         </div>
         <hr className="w-full" />
-        <div className="relative h-full">
+        <div className="flex flex-col relative h-full">
           <div className="bg-white px-6 py-6">
             <div className="flex">
               <span className="text-gray-500">To</span>
