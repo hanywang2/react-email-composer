@@ -1,5 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Editor, EditorState, RichUtils } from 'draft-js';
+import {
+  Editor,
+  EditorState,
+  ContentState,
+  RichUtils,
+  convertToRaw,
+} from 'draft-js';
 import 'draft-js/dist/Draft.css';
 
 const PLACEHOLDERS = [
@@ -31,6 +37,7 @@ function App() {
   const [lastCompletedPlaceholder, setLastCompletedPlaceholder] = useState(0);
   const [timeSinceStart, setTimeSinceStart] = useState(0);
   const [fromInput, setFromInput] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -108,8 +115,39 @@ function App() {
     );
   };
 
+  const onSendEmail = async () => {
+    setIsGenerating(true);
+
+    const blocks = convertToRaw(editorState.getCurrentContent()).blocks;
+    const emailValue = blocks
+      .map((block) => (!block.text.trim() && '\n') || block.text)
+      .join('\n');
+
+    const response = await fetch('http://localhost:5000/api/email', {
+      method: 'POST',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: emailValue,
+      }),
+    });
+
+    const responseData = await response.json();
+    setEditorState(
+      EditorState.createWithContent(
+        ContentState.createFromText(responseData.response)
+      )
+    );
+    return setIsGenerating(false);
+  };
+
   const isFromPlaceholderEmpty = fromInput === '';
   const isEmailValid = validateEmail(fromInput);
+
+  const isAbleToSend =
+    editorState.getCurrentContent().hasText() && isEmailValid;
 
   return (
     <div className="p-8 bg-transparent w-full h-screen">
@@ -121,61 +159,99 @@ function App() {
           Interactive Demo
         </div>
         <hr className="w-full" />
-        <div className="bg-white px-6 py-6">
-          <div className="flex">
-            <span className="text-gray-500">To</span>
-            <span
-              className="relative ml-1 font-semibold px-2 rounded-md"
-              style={{
-                backgroundColor: '#ebf5f5',
-                color: 'rgba(66, 133, 244)',
-              }}
-            >
-              <span>Dunder Mifflin Support (support@dundermifflin.com)</span>
-            </span>
-          </div>
-          <div className="flex mt-2">
-            <span className="text-gray-500">From</span>
-            <span
-              className={`relative ml-1 font-semibold px-2 rounded-md ${
-                isFromPlaceholderEmpty ? 'w-48' : ''
-              }`}
-              style={{
-                backgroundColor: isEmailValid ? '#ebf5f5' : '#f8f8f8',
-                color: isEmailValid ? 'rgba(66, 133, 244)' : 'rgba(75, 85, 99)',
-              }}
-            >
-              <span className="text-transparent">{fromInput}</span>
-              <input
-                type="text"
-                className="absolute h-full left-0 font-semibold px-2 rounded-md
+        <div className="relative h-full">
+          <div className="bg-white px-6 py-6">
+            <div className="flex">
+              <span className="text-gray-500">To</span>
+              <span
+                className="relative ml-1 font-semibold px-2 rounded-md"
+                style={{
+                  backgroundColor: '#ebf5f5',
+                  color: 'rgba(66, 133, 244)',
+                }}
+              >
+                <span>Dunder Mifflin (support@dundermifflin.com)</span>
+              </span>
+            </div>
+            <div className="flex mt-2">
+              <span className="text-gray-500">From</span>
+              <span
+                className={`relative ml-1 font-semibold px-2 rounded-md ${
+                  isFromPlaceholderEmpty ? 'w-44' : ''
+                }`}
+                style={{
+                  backgroundColor: isEmailValid ? '#ebf5f5' : '#f8f8f8',
+                  color: isEmailValid
+                    ? 'rgba(66, 133, 244)'
+                    : 'rgba(75, 85, 99)',
+                }}
+              >
+                <span className="text-transparent">{fromInput}</span>
+                <input
+                  type="text"
+                  className="absolute h-full left-0 font-semibold px-2 rounded-md
                 bg-transparent focus:outline-none min-w-full placeholder-gray-400"
-                value={fromInput}
-                onChange={(e) => setFromInput(e.target.value)}
-                placeholder="you@example.com"
-              />
-            </span>
+                  value={fromInput}
+                  onChange={(e) => setFromInput(e.target.value)}
+                  placeholder="you@business.com"
+                />
+              </span>
+            </div>
           </div>
+          <hr className="mx-6" />
+          <div className="relative px-6 py-4 flex-auto overflow-scroll h-full text-gray-800">
+            <Editor
+              editorState={editorState}
+              placeholder={isFocused ? '' : currentPlaceholder.text}
+              handleKeyCommand={handleKeyCommand}
+              onChange={setEditorState}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
+            />
+          </div>
+          {isGenerating && (
+            <>
+              <div
+                className="absolute top-0 h-full w-full bg-gray-100 z-10 opacity-80
+          flex items-center justify-center"
+              ></div>
+              <div
+                className="absolute top-0 h-full w-full z-20 bg-transparent
+          flex items-center justify-center font-semibold animate-pulse"
+              >
+                <div className="flex flex-col items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                    />
+                  </svg>
+                  <p className="mt-2 text-xl text-gray-700">
+                    Drafting Response
+                  </p>
+                </div>
+              </div>
+            </>
+          )}
         </div>
-        <hr className="mx-6" />
-        <div className="px-6 py-4 flex-auto overflow-scroll h-full">
-          <Editor
-            editorState={editorState}
-            placeholder={isFocused ? '' : currentPlaceholder.text}
-            handleKeyCommand={handleKeyCommand}
-            onChange={setEditorState}
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
-          />
-        </div>
-        <div className="flex px-6 py-2 bg-gray-100 rounded-b-lg">
+        <div className="flex px-6 py-2 bg-gray-100 rounded-b-lg z-10">
           <button
+            disabled={!isAbleToSend}
             className={`${
-              editorState.getCurrentContent().hasText() && fromInput !== ''
+              isAbleToSend
                 ? 'bg-blue-600 hover:bg-blue-500 text-white'
-                : 'bg-gray-300 text-gray-100'
+                : 'bg-gray-300 text-gray-100 cursor-not-allowed'
             }
             py-2 px-12 rounded-md font-medium`}
+            onClick={onSendEmail}
           >
             Send
           </button>
