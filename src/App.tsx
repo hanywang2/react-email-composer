@@ -77,15 +77,11 @@ function App() {
           return setTimeSinceStart(timeSinceStart + TYPING_SPEED);
         }
       } else {
-        if (
-          timeSinceStart % (TYPING_SPEED * 2) === 0 &&
-          typedResponse.length < emailResponse.length
-        ) {
+        if (typedResponse.length < emailResponse.length) {
           setTypedResponse(
             emailResponse.substring(0, typedResponse.length + 1)
           );
         }
-        setTimeSinceStart(timeSinceStart + TYPING_SPEED);
       }
     }, TYPING_SPEED);
     return () => clearInterval(interval);
@@ -167,7 +163,6 @@ function App() {
 
     if (responseData.success) {
       setEmailResponse(responseData.response);
-      setTimeSinceStart(0);
     } else {
       alert(responseData.error);
     }
