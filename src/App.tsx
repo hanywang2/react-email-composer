@@ -20,10 +20,11 @@ const PLACEHOLDERS = [
   },
 ];
 
-const BACKEND_HOST =
-  process.env.NODE_ENV === 'production'
-    ? 'https://schlope.herokuapp.com'
-    : 'http://localhost:5000';
+const IS_DEV = false;
+
+const BACKEND_HOST = !IS_DEV
+  ? 'https://schlope.herokuapp.com'
+  : 'http://localhost:5000';
 
 const TYPING_SPEED = 25;
 
