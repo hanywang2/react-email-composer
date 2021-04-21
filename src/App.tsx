@@ -20,6 +20,11 @@ const PLACEHOLDERS = [
   },
 ];
 
+const BACKEND_HOST =
+  process.env.CONTEXT === 'production'
+    ? 'https://schlope.herokuapp.com'
+    : 'http://localhost:5000';
+
 const TYPING_SPEED = 25;
 
 function App() {
@@ -144,7 +149,7 @@ function App() {
       .map((block) => (!block.text.trim() && '\n') || block.text)
       .join('\n');
 
-    const response = await fetch('http://localhost:5000/api/email', {
+    const response = await fetch(`${BACKEND_HOST}/api/email`, {
       method: 'POST',
       mode: 'cors',
       headers: {
