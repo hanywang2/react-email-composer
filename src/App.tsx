@@ -20,7 +20,7 @@ const PLACEHOLDERS = [
   },
 ];
 
-const IS_DEV = false;
+const IS_DEV = process.env.NODE_ENV === 'development';
 
 const BACKEND_HOST = !IS_DEV
   ? 'https://schlope.herokuapp.com'
@@ -158,13 +158,20 @@ function App() {
       },
       body: JSON.stringify({
         email: emailValue,
+        fromAddress: fromInput,
         recaptchaToken,
       }),
     });
 
     const responseData = await response.json();
-    setEmailResponse(responseData.response);
-    setTimeSinceStart(0);
+
+    if (responseData.success) {
+      setEmailResponse(responseData.response);
+      setTimeSinceStart(0);
+    } else {
+      alert(responseData.error);
+    }
+
     return setIsGenerating(false);
   };
 
