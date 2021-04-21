@@ -1,12 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
-import {
-  Editor,
-  EditorState,
-  ContentState,
-  RichUtils,
-  convertToRaw,
-} from 'draft-js';
+import { Editor, EditorState, RichUtils, convertToRaw } from 'draft-js';
 import 'draft-js/dist/Draft.css';
 
 const PLACEHOLDERS = [
@@ -26,7 +20,10 @@ const PLACEHOLDERS = [
   },
 ];
 
+const TYPING_SPEED = 25;
+
 function App() {
+  const { executeRecaptcha } = useGoogleReCaptcha();
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty()
   );
@@ -39,43 +36,61 @@ function App() {
   const [timeSinceStart, setTimeSinceStart] = useState(0);
   const [fromInput, setFromInput] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
-  const { executeRecaptcha } = useGoogleReCaptcha();
+  const [emailResponse, setEmailResponse] = useState('');
+  const [typedResponse, setTypedResponse] = useState('');
+
+  const isResponse = emailResponse !== '';
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const currentLength = currentPlaceholder.text.length;
+      if (!isResponse) {
+        const currentLength = currentPlaceholder.text.length;
 
-      const currentIndex = PLACEHOLDERS.findIndex(
-        (placeholder) => placeholder.key === currentPlaceholder.key
-      );
+        const currentIndex = PLACEHOLDERS.findIndex(
+          (placeholder) => placeholder.key === currentPlaceholder.key
+        );
 
-      const selectedPlaceholder = PLACEHOLDERS[currentIndex];
+        const selectedPlaceholder = PLACEHOLDERS[currentIndex];
 
-      if (currentLength < selectedPlaceholder.text.length) {
-        setCurrentPlaceholder({
-          key: selectedPlaceholder.key,
-          text: selectedPlaceholder.text.substring(0, currentLength + 1),
-        });
-      } else if (lastCompletedPlaceholder === 0) {
-        setLastCompletedPlaceholder(timeSinceStart);
-      }
+        if (currentLength < selectedPlaceholder.text.length) {
+          setCurrentPlaceholder({
+            key: selectedPlaceholder.key,
+            text: selectedPlaceholder.text.substring(0, currentLength + 1),
+          });
+        } else if (lastCompletedPlaceholder === 0) {
+          setLastCompletedPlaceholder(timeSinceStart);
+        }
 
-      if (timeSinceStart - lastCompletedPlaceholder > 7000) {
-        setLastCompletedPlaceholder(0);
-        setTimeSinceStart(0);
-        const nextIndex =
-          currentIndex + 1 === PLACEHOLDERS.length ? 0 : currentIndex + 1;
-        setCurrentPlaceholder({ key: PLACEHOLDERS[nextIndex].key, text: '' });
+        if (timeSinceStart - lastCompletedPlaceholder > 7000) {
+          setLastCompletedPlaceholder(0);
+          setTimeSinceStart(0);
+          const nextIndex =
+            currentIndex + 1 === PLACEHOLDERS.length ? 0 : currentIndex + 1;
+          setCurrentPlaceholder({ key: PLACEHOLDERS[nextIndex].key, text: '' });
+        } else {
+          return setTimeSinceStart(timeSinceStart + TYPING_SPEED);
+        }
       } else {
-        return setTimeSinceStart(timeSinceStart + 30);
+        if (
+          timeSinceStart % (TYPING_SPEED * 2) === 0 &&
+          typedResponse.length < emailResponse.length
+        ) {
+          setTypedResponse(
+            emailResponse.substring(0, typedResponse.length + 1)
+          );
+        }
+        setTimeSinceStart(timeSinceStart + TYPING_SPEED);
       }
-    }, 25);
+    }, TYPING_SPEED);
     return () => clearInterval(interval);
   }, [
     currentPlaceholder.key,
     currentPlaceholder.text.length,
     lastCompletedPlaceholder,
     timeSinceStart,
+    emailResponse,
+    typedResponse,
+    isResponse,
   ]);
 
   const handleKeyCommand = (command: any) => {
@@ -142,11 +157,8 @@ function App() {
     });
 
     const responseData = await response.json();
-    setEditorState(
-      EditorState.createWithContent(
-        ContentState.createFromText(responseData.response)
-      )
-    );
+    setEmailResponse(responseData.response);
+    setTimeSinceStart(0);
     return setIsGenerating(false);
   };
 
@@ -170,51 +182,78 @@ function App() {
           <div className="bg-white px-6 py-6">
             <div className="flex">
               <span className="text-gray-500">To</span>
-              <span
-                className="relative ml-1 font-semibold px-2 rounded-md"
-                style={{
-                  backgroundColor: '#ebf5f5',
-                  color: 'rgba(66, 133, 244)',
-                }}
-              >
-                <span>Dunder Mifflin (support@dundermifflin.com)</span>
-              </span>
+              {isResponse ? (
+                <span
+                  className="relative ml-1 font-semibold px-2 rounded-md text-white"
+                  style={{
+                    backgroundColor: 'rgba(66, 133, 244)',
+                  }}
+                >
+                  {fromInput}
+                </span>
+              ) : (
+                <span
+                  className="relative ml-1 font-semibold px-2 rounded-md"
+                  style={{
+                    backgroundColor: '#ebf5f5',
+                    color: 'rgba(66, 133, 244)',
+                  }}
+                >
+                  Dunder Mifflin (support@dundermifflin.com)
+                </span>
+              )}
             </div>
             <div className="flex mt-2">
               <span className="text-gray-500">From</span>
-              <span
-                className={`relative ml-1 font-semibold px-2 rounded-md ${
-                  isFromPlaceholderEmpty ? 'w-44' : ''
-                }`}
-                style={{
-                  backgroundColor: isEmailValid ? '#ebf5f5' : '#f8f8f8',
-                  color: isEmailValid
-                    ? 'rgba(66, 133, 244)'
-                    : 'rgba(75, 85, 99)',
-                }}
-              >
-                <span className="text-transparent">{fromInput}</span>
-                <input
-                  type="text"
-                  className="absolute h-full left-0 font-semibold px-2 rounded-md
+              {isResponse ? (
+                <span
+                  className="relative ml-1 font-semibold px-2 rounded-md"
+                  style={{
+                    backgroundColor: '#ebf5f5',
+                    color: 'rgba(66, 133, 244)',
+                  }}
+                >
+                  <span>Dunder Mifflin (support@dundermifflin.com)</span>
+                </span>
+              ) : (
+                <span
+                  className={`relative ml-1 font-semibold px-2 rounded-md ${
+                    isFromPlaceholderEmpty ? 'w-44' : ''
+                  }`}
+                  style={{
+                    backgroundColor: isEmailValid ? '#ebf5f5' : '#f8f8f8',
+                    color: isEmailValid
+                      ? 'rgba(66, 133, 244)'
+                      : 'rgba(75, 85, 99)',
+                  }}
+                >
+                  <span className="text-transparent">{fromInput}</span>
+                  <input
+                    type="text"
+                    className="absolute h-full left-0 font-semibold px-2 rounded-md
                 bg-transparent focus:outline-none min-w-full placeholder-gray-400"
-                  value={fromInput}
-                  onChange={(e) => setFromInput(e.target.value)}
-                  placeholder="you@business.com"
-                />
-              </span>
+                    value={fromInput}
+                    onChange={(e) => setFromInput(e.target.value)}
+                    placeholder="you@business.com"
+                  />
+                </span>
+              )}
             </div>
           </div>
           <hr className="mx-6" />
-          <div className="relative px-6 py-4 flex-auto overflow-scroll h-full text-gray-800">
-            <Editor
-              editorState={editorState}
-              placeholder={isFocused ? '' : currentPlaceholder.text}
-              handleKeyCommand={handleKeyCommand}
-              onChange={setEditorState}
-              onFocus={() => setIsFocused(true)}
-              onBlur={() => setIsFocused(false)}
-            />
+          <div className="relative px-6 py-4 flex-auto overflow-scroll h-full text-gray-800 whitespace-pre-line">
+            {isResponse ? (
+              typedResponse
+            ) : (
+              <Editor
+                editorState={editorState}
+                placeholder={isFocused ? '' : currentPlaceholder.text}
+                handleKeyCommand={handleKeyCommand}
+                onChange={setEditorState}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+              />
+            )}
           </div>
           {isGenerating && (
             <>
