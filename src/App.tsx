@@ -21,7 +21,7 @@ const PLACEHOLDERS = [
 ];
 
 const BACKEND_HOST =
-  process.env.CONTEXT === 'production'
+  process.env.NODE_ENV === 'production'
     ? 'https://schlope.herokuapp.com'
     : 'http://localhost:5000';
 
