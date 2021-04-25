@@ -178,7 +178,7 @@ function App() {
 
   return (
     <div className="sm:p-8 bg-transparent w-full h-screen">
-      <div className="flex shadow-xl flex-col h-full bg-white rounded-lg text-lg">
+      <div className="flex sm:shadow-xl flex-col h-full bg-white rounded-lg text-lg">
         <div
           className="px-6 py-4 w-full text-white font-bold rounded-t-lg"
           style={{ backgroundColor: '#0c1d37' }}
