@@ -170,11 +170,10 @@ function App() {
     return setIsGenerating(false);
   };
 
-  const isFromPlaceholderEmpty = fromInput === '';
-  const isEmailValid = validateEmail(fromInput);
+  // const isFromPlaceholderEmpty = fromInput === '';
+  // const isEmailValid = validateEmail(fromInput);
 
-  const isAbleToSend =
-    editorState.getCurrentContent().hasText() && isEmailValid;
+  const isAbleToSend = editorState.getCurrentContent().hasText();
 
   return (
     <div className="sm:p-8 bg-transparent w-full h-screen">
@@ -189,29 +188,20 @@ function App() {
         <div className="flex flex-col relative h-full">
           <div className="bg-white px-6 py-6">
             <div className="flex">
-              <span className="text-gray-500">To</span>
-              {isResponse ? (
-                <span
-                  className="relative ml-1 font-semibold px-2 rounded-md text-white"
-                  style={{
-                    backgroundColor: 'rgba(66, 133, 244)',
-                  }}
-                >
-                  {fromInput}
-                </span>
-              ) : (
-                <span
-                  className="relative ml-1 font-semibold px-2 rounded-md"
-                  style={{
-                    backgroundColor: '#ebf5f5',
-                    color: 'rgba(66, 133, 244)',
-                  }}
-                >
-                  Dunder Mifflin (support@dundermifflin.com)
-                </span>
-              )}
+              <span className="text-gray-500">
+                {isResponse ? 'From' : 'To'}
+              </span>
+              <span
+                className="relative ml-1 font-semibold px-2 rounded-md"
+                style={{
+                  backgroundColor: '#ebf5f5',
+                  color: 'rgba(66, 133, 244)',
+                }}
+              >
+                Dunder Mifflin (support@dundermifflin.com)
+              </span>
             </div>
-            <div className="flex mt-2">
+            {/* <div className="flex mt-2">
               <span className="text-gray-500">From</span>
               {isResponse ? (
                 <span
@@ -246,10 +236,10 @@ function App() {
                   />
                 </span>
               )}
-            </div>
+            </div> */}
           </div>
           <hr className="mx-6" />
-          <div className="relative px-6 py-4 flex-auto overflow-scroll h-full text-gray-800 whitespace-pre-line">
+          <div className="relative px-6 py-4 flex-auto overflow-y-scroll h-full text-gray-800 whitespace-pre-line">
             {isResponse ? (
               typedResponse
             ) : (
