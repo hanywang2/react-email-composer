@@ -40,7 +40,6 @@ function App() {
   const [isFocused, setIsFocused] = useState(false);
   const [lastCompletedPlaceholder, setLastCompletedPlaceholder] = useState(0);
   const [timeSinceStart, setTimeSinceStart] = useState(0);
-  const [fromInput, setFromInput] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [emailResponse, setEmailResponse] = useState('');
   const [typedResponse, setTypedResponse] = useState('');
@@ -154,7 +153,7 @@ function App() {
       },
       body: JSON.stringify({
         email: emailValue,
-        fromAddress: fromInput,
+        fromAddress: '',
         recaptchaToken,
       }),
     });
@@ -389,10 +388,5 @@ function App() {
     </div>
   );
 }
-
-const validateEmail = (email: string) => {
-  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  return re.test(String(email).toLowerCase());
-};
 
 export default App;
