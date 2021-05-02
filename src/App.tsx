@@ -175,10 +175,7 @@ function App() {
   const isAbleToSend = editorState.getCurrentContent().hasText();
 
   return (
-    <div
-      className="sm:p-8 w-full h-screen"
-      style={{ backgroundColor: '#4285F40D' }}
-    >
+    <div className="sm:p-8 w-full h-screen bg-transparent">
       <div className="flex sm:shadow-xl flex-col h-full bg-white rounded-lg text-lg">
         <div
           className="px-6 py-4 w-full text-white font-bold rounded-t-lg"
