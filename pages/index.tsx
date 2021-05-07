@@ -1,6 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
-import { Editor, EditorState, RichUtils, convertToRaw } from 'draft-js';
+import {
+  Editor,
+  EditorState,
+  RichUtils,
+  convertToRaw,
+  convertFromRaw,
+} from 'draft-js';
 import 'draft-js/dist/Draft.css';
 
 const PLACEHOLDERS = [
@@ -30,8 +36,8 @@ const TYPING_SPEED = 25;
 
 function App() {
   const { executeRecaptcha } = useGoogleReCaptcha();
-  const [editorState, setEditorState] = useState(() =>
-    EditorState.createEmpty()
+  const [editorState, setEditorState] = useState(
+    EditorState.createWithContent(emptyContentState)
   );
   const [currentPlaceholder, setCurrentPlaceholder] = useState({
     key: 'price',
@@ -168,6 +174,8 @@ function App() {
 
     return setIsGenerating(false);
   };
+
+  console.log('Rerendering');
 
   // const isFromPlaceholderEmpty = fromInput === '';
   // const isEmailValid = validateEmail(fromInput);
@@ -390,3 +398,15 @@ function App() {
 }
 
 export default App;
+
+const emptyContentState = convertFromRaw({
+  entityMap: {},
+  blocks: [
+    {
+      text: '',
+      key: 'foo',
+      type: 'unstyled',
+      entityRanges: [],
+    },
+  ],
+});

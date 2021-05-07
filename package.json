@@ -1,53 +1,25 @@
 {
-  "name": "react-email-composer",
+  "name": "email-demos",
   "version": "0.1.0",
   "private": true,
-  "dependencies": {
-    "@craco/craco": "^6.1.1",
-    "@testing-library/jest-dom": "^5.11.10",
-    "@testing-library/react": "^11.2.6",
-    "@testing-library/user-event": "^12.8.3",
-    "@types/jest": "^26.0.22",
-    "@types/node": "^12.20.10",
-    "@types/react": "^17.0.3",
-    "@types/react-dom": "^17.0.3",
-    "draft-js": "^0.11.7",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-google-recaptcha-v3": "^1.9.0",
-    "react-scripts": "4.0.3",
-    "typescript": "^4.2.4",
-    "web-vitals": "^1.1.1"
-  },
   "scripts": {
-    "start": "craco start",
-    "build": "craco build",
-    "test": "craco test",
-    "eject": "react-scripts eject"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "dependencies": {
+    "draft-js": "^0.11.7",
+    "next": "10.2.0",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "react-google-recaptcha-v3": "^1.9.4"
   },
   "devDependencies": {
-    "@tailwindcss/postcss7-compat": "^2.1.0",
-    "@types/draft-js": "^0.11.1",
-    "autoprefixer": "^9.8.6",
-    "postcss": "^7.0.35",
-    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.1.0"
+    "@types/node": "^15.0.2",
+    "@types/react": "^17.0.5",
+    "autoprefixer": "^10.2.5",
+    "postcss": "^8.2.14",
+    "tailwindcss": "^2.1.2",
+    "typescript": "^4.2.4"
   }
 }
