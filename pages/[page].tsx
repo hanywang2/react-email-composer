@@ -15,7 +15,7 @@ import 'draft-js/dist/Draft.css';
 const IS_DEV = process.env.NODE_ENV === 'development';
 
 const BACKEND_HOST = !IS_DEV
-  ? 'https://schlope.herokuapp.com'
+  ? 'https://api.promptly.to'
   : 'http://localhost:5000';
 
 const TYPING_SPEED = 25;
