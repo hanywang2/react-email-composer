@@ -142,7 +142,7 @@ export const EmailComposer = ({
       .map((block) => (!block.text.trim() && '\n') || block.text)
       .join('\n');
 
-    const response = await fetch(`${BACKEND_HOST}/api/email`, {
+    const response = await fetch(`${BACKEND_HOST}/api/demo/email`, {
       method: 'POST',
       mode: 'cors',
       headers: {
